@@ -277,3 +277,70 @@ h1,
   line-height: 1.6;
   color: #4b5563;
 }
+
+/* Bagian Education */
+
+.edu {
+  padding: 4rem 1rem;
+  border-top: 1px solid var(--line);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.edu-grid {
+  display: flex;
+  flex-direction: row; /* Horizontal layout instead of vertical */
+  flex-wrap: wrap; /* Allows stacking on mobile */
+  gap: 2rem;
+  margin-top: 3rem; /* Fallback distance from h2 if .section-title isn't global */
+}
+
+.edu-card {
+  flex: 1 1 min(100%, 400px); /* Cards grow equally but stay responsive */
+  background: #f9fafb;
+  padding: 1.75rem 2rem;
+  border-radius: 0 12px 12px 0; /* Flat left edge for the accent border */
+  border: 1px solid #e5e7eb;
+  border-left: 6px solid #10b981; /* Emerald green left-border accent */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Aligns to top in case title wraps */
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.edu-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.edu-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #047857; /* Matches the emerald theme */
+  background-color: #d1fae5;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px; /* Sharper edges compared to the pill shape in Experience */
+}
+
+.edu-program {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.edu-desc {
+  margin: 0;
+  line-height: 1.6;
+  color: #4b5563;
+}
