@@ -1,3 +1,5 @@
+/* Tema Utamanya + Header-Footer */
+
 * {
   margin: 0;
   padding: 0;
@@ -63,6 +65,15 @@ h1,
   text-decoration: none;
   font-size: 0.95rem;
 }
+
+.site-footer {
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Bagian Profile */
 
 .hero {
   padding: 4.5rem 0 5rem;
@@ -173,13 +184,6 @@ h1,
   border: 3px solid var(--ink);
 }
 
-.site-footer {
-  padding: 1.5rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  border-top: 1px solid var(--line);
-}
-
 @media (max-width: 600px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -196,4 +200,80 @@ h1,
   .social-links {
     justify-content: flex-start;
   }
+}
+
+/* Bagian Experience */
+
+.exp {
+  padding: 4rem 1rem;
+  border-top: 1px solid var(--line);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 2rem;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.exp-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.exp-card {
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between; /* Pushes title left and date right */
+  align-items: center; /* Vertically centers the text */
+  flex-wrap: wrap; /* Prevents overlap on very small mobile screens */
+  gap: 1rem;
+}
+
+.exp-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.exp-date {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px; /* Creates a pill shape */
+}
+
+.exp-organization {
+  margin: 0;
+  font-weight: 600;
+  color: #2563eb; /* Highlights the organization */
+  font-size: 1rem;
+}
+
+.exp-desc {
+  margin: 0;
+  margin-top: 0.5rem;
+  line-height: 1.6;
+  color: #4b5563;
 }
