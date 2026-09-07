@@ -15,11 +15,19 @@
   --radius: 4px;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 body {
   font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--ink);
   background-color: var(--paper);
   line-height: 1.6;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 h1,
@@ -39,7 +47,14 @@ h3,
 }
 
 .site-header {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(143, 164, 196, 0.3);
+  position: sticky;
+  top: 0;
+  background-color: color-mix(in srgb, var(--paper) 75%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+  transition: background-color 0.3s ease;
 }
 
 .site-header .container {
@@ -66,6 +81,11 @@ h3,
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.site-header nav a:hover {
+  color: var(--accent);
 }
 
 .hero {
@@ -146,11 +166,14 @@ h3,
   background-color: var(--ink);
   border-radius: var(--radius);
   padding: 0.5rem 1.1rem;
-  transition: all 0.2s ease;
+  transition:
+    all 0.2s ease,
+    transform 0.2s ease;
 }
 
 .social-link:hover {
   background-color: var(--accent-dark);
+  transform: translateY(-2px);
 }
 
 .photo-block {
@@ -162,6 +185,11 @@ h3,
   background-color: var(--accent);
   border-radius: var(--radius);
   z-index: 0;
+  transition: transform 0.3s ease;
+}
+
+.hero-photo:hover .photo-block {
+  transform: translate(-0.5rem, -0.5rem);
 }
 
 .avatar {
@@ -211,6 +239,23 @@ h3,
   display: flex;
   flex-direction: column;
   flex: 1;
+  transition:
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    opacity 0.4s ease,
+    filter 0.4s ease;
+}
+
+.grid-layout:hover .base-card:not(:hover) {
+  opacity: 0.5;
+  filter: grayscale(60%);
+}
+
+.base-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent);
 }
 
 .card-image-wrapper {
@@ -224,6 +269,11 @@ h3,
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.base-card:hover .card-cover {
+  transform: scale(1.05);
 }
 
 .card-content {
