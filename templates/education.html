@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ name }} - Portofolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+        <nav>
+          <a href="{% url 'main:show_main' %}">Profile</a>
+          <a href="{% url 'main:show_experience' %}">Experience</a>
+          <a href="#education">Education</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="edu" id="education">
+        <div class="container">
+          <h2 class="section-title">Education</h2>
+          <div class="edu-grid grid-layout">
+            {% for edu in education_list %}
+            <article class="base-card">
+              <div class="card-image-wrapper">
+                {% if edu.image_url %}
+                <img
+                  src="{{ edu.image_url }}"
+                  alt="{{ edu.organization }}"
+                  class="card-cover"
+                />
+                {% endif %}
+              </div>
+              <div class="card-content">
+                <div class="card-header">
+                  <h3>{{ edu.organization }}</h3>
+                  <span class="card-badge">{{ edu.formatted_year }}</span>
+                </div>
+                <p class="card-organization">{{ edu.field_of_study }}</p>
+                <p class="card-desc">{{ edu.description }}</p>
+              </div>
+            </article>
+            {% empty %}
+            <p>Belum ada data pendidikan.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          &copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

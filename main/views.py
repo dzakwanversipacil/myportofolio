@@ -32,4 +32,4 @@ def show_education(request):
         "name": "Dzakwan Farabi Al Muzhaffar",
         "education_list": educations,
     }
-    return render(request, "experience.html", context)
+    return render(request, "education.html", context)
