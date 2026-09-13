@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.db.models import F
 from main.models import Experience
 
 
@@ -18,8 +18,10 @@ def show_main(request):
 
 
 def show_experience(request):
+    experiences = Experience.objects.all().order_by(F('end_date').desc(nulls_first=True), '-start_date')
+    
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
-        "experience_list": Experience.objects.all(),
+        "experience_list": experiences,
     }
     return render(request, "experience.html", context)

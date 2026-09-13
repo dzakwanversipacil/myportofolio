@@ -14,13 +14,29 @@ class Experience(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default='full-time')
-    thumbnail = models.URLField(blank=True, null=True)
-    started_at = models.DateTimeField(auto_now_add=True)
-    ended_at = models.DateTimeField(blank=True, null=True)
+    organization = models.CharField(max_length=255, default='')
+    start_date = models.DateTimeField(blank=True, null=True) 
+    end_date = models.DateTimeField(blank=True, null=True)
+    image_url = models.URLField(max_length=500, null=True, blank=True)
+
     def __str__(self):
         return self.title
-    
+        
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
+    @property
+    def formatted_year(self):
+        if not self.start_date:
+            return ""
+        
+        start_year = self.start_date.strftime("%Y")
+        
+        if self.end_date:
+            end_year = self.end_date.strftime("%Y")
+            if start_year == end_year:
+                return start_year
+            return f"{start_year} - {end_year}"
+        
+        return f"{start_year} - Present"

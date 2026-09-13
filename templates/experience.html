@@ -23,30 +23,33 @@
         </nav>
       </div>
     </header>
-
     <main>
-      <section class="experience-section" id="experience">
+      <section class="exp" id="experience">
         <div class="container">
-          <p class="section-kicker">Perjalanan saya sejauh ini</p>
-          <h1>Experience</h1>
-
-          <div class="experience-grid">
-            {% for experience in experience_list %}
-            <article class="experience-card">
-              <span class="experience-category">
-                {{ experience.get_category_display }}
-              </span>
-              <h2>{{ experience.title }}</h2>
-              <p class="experience-description">{{ experience.description }}</p>
-
-              {% if experience.is_ongoing %}
-              <p class="experience-status">Sedang berlangsung</p>
-              {% else %}
-              <p class="experience-status">Selesai</p>
-              {% endif %}
+          <h2 class="section-title">Experience</h2>
+          <div class="exp-grid grid-layout">
+            {% for exp in experience_list %}
+            <article class="base-card">
+              <div class="card-image-wrapper">
+                {% if exp.image_url %}
+                <img
+                  src="{{ exp.image_url }}"
+                  alt="{{ exp.organization }} experience image"
+                  class="card-cover"
+                />
+                {% endif %}
+              </div>
+              <div class="card-content">
+                <div class="card-header">
+                  <h3>{{ exp.title }}</h3>
+                  <span class="card-badge">{{ exp.formatted_year }}</span>
+                </div>
+                <p class="card-organization">{{ exp.organization }}</p>
+                <p class="card-desc">{{ exp.description }}</p>
+              </div>
             </article>
             {% empty %}
-            <p class="empty-state">Belum ada pengalaman yang ditambahkan.</p>
+            <p>Belum ada data pengalaman.</p>
             {% endfor %}
           </div>
         </div>
