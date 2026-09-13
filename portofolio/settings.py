@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -30,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wi)#a-72s_@89qd4kp-jwmnn!zcj&fmv$y%ve52j7&rp7$hocv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = (BASE_DIR / 'db.sqlite3').exists()
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "dzakwan-farabi-myportofolio.pws.cs.ui.ac.id"]
 
@@ -56,6 +57,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://dzakwan-farabi-myportofolio.pws.cs.ui.ac.id"
 ]
 
 ROOT_URLCONF = 'portofolio.urls'
