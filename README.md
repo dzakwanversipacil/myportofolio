@@ -1,27 +1,84 @@
-Nama : Dzakwan Farabi Al Muzhaffar
+# 🚀 Personal Portfolio Web Application
 
-NPM : 2506612436
+A dynamic, responsive personal portfolio website developed to showcase projects, experiences, and educational background. Originally built as a semantic static site, the project has been iteratively engineered into a dynamic web application using the Django framework.
 
-Kelas : PBP F
+**Dzakwan Farabi Al Muzhaffar** | NPM: 2506612436 | PBP F
 
-# Portfolio Dzakwan Farabi Al Muzhaffar
+---
 
-## Deskripsi Proyek
+## 🌟 Features
 
-Website portofolio pribadi yang awalnya dibangun secara statis menggunakan HTML5 semantik dan CSS3 murni, dan kini telah dikembangkan menjadi aplikasi web dinamis menggunakan _framework_ Django dengan arsitektur Model-View-Template (MVT). Proyek ini dikembangkan secara iteratif untuk memenuhi penugasan mata kuliah Pemrograman Berbasis Platform.
+- **Dynamic Content Management:** Utilizes Django's Model-View-Template (MVT) architecture for database-driven content rendering, allowing seamless updates to Experience and Education sections via the admin panel.
+- **Semantic Structure:** Strictly adheres to HTML5 semantic tags (`<header>`, `<main>`, `<article>`, `<section>`) ensuring high accessibility and SEO optimization.
+- **Fluid Responsive UI:** Implements advanced CSS techniques including Flexbox, Grid areas, and fluid typography (`clamp()`) to ensure the layout adapts elegantly across mobile and desktop viewports without excessive media queries.
 
-## Cara Menjalankan (Setup)
+## 💻 Tech Stack
 
-1. Lakukan _clone_ pada repositori ini ke _device_ lokal.
-2. Buka terminal dan arahkan ke direktori proyek.
-3. Jalankan _virtual environment_ dan _install dependencies_ (sesuai kerangka Django).
-4. Lakukan migrasi database untuk membangun skema model dengan menjalankan `python manage.py makemigrations` dilanjutkan dengan `python manage.py migrate`.
-5. Gunakan perintah `python manage.py runserver` untuk menjalankan _local server_.
-6. Buka `http://localhost:8000` di _browser_.
+- **Backend:** Python, Django
+- **Database:** SQLite (Development) / PostgreSQL (Production ready)
+- **Frontend:** HTML5, CSS3
+- **Testing:** Django `TestCase`, `Client`
 
-## Refleksi Tugas Individu
+## 📂 Project Structure
 
-### Tugas 1
+The main directory structure of this project repository:
+
+```text
+myportofolio/
+├── main/                   # Main Django application directory
+│   ├── migrations/         # Database schema migration history
+│   ├── models.py           # Database schema definitions (Experience, Education)
+│   ├── tests.py            # Application functional tests (Unit Tests)
+│   ├── urls.py             # App-level URL routing configuration
+│   └── views.py            # Request and response processing logic
+├── portofolio/             # Project-level Django configuration directory
+│   ├── settings.py         # Global project settings and configurations
+│   └── urls.py             # Root URL declarations
+├── static/                 # Static assets directory
+│   ├── css/
+│   │   └── style.css       # Main stylesheet
+│   └── img/                # Image assets
+├── templates/              # HTML templates directory
+│   ├── education.html
+│   ├── experience.html
+│   └── index.html
+├── .gitignore              # Ignored files and directories
+├── README.md               # Project documentation
+├── manage.py               # Django command-line utility
+└── requirements.txt        # Python dependencies list
+```
+
+## ⚙️ Setup and Installation
+
+Follow these steps to run the project locally:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/dzakwanversipacil/myportofolio.git
+   cd myportofolio
+   ```
+2. **Set Up Virtual Environment & Install Dependencies**
+   ```bash
+   python -m venv env
+   env\Scripts\activate       # On Windows
+   # source env/bin/activate  # On macOS/Linux
+   pip install -r requirements.txt
+   ```
+3. **Apply Database Migrations**
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+4. **Run the Development Server**
+   ```bash
+   python manage.py runserver
+   ```
+   Access the application at http://localhost:8000 in your browser.
+
+## 📚 Individual Assignment Reflections (in Indonesian)
+
+<details>
+<summary><b>Tugas 1</b></summary>
 
 **1. Penggunaan Elemen Semantik HTML5**  
 Dalam proyek ini, saya mengimplementasikan elemen semantik seperti `<header>`, `<main>`, `<section>`, `<article>`, dan `<footer>`. `<section>` digunakan untuk memisahkan area _Profile_, _Experience_, dan _Education_. Di dalamnya, `<article>` meng-_wrap_ komponen mandiri seperti _card_ pengalaman dan pendidikan. Berdasarkan yang saya pelajari, penggunaan elemen ini mempermudah pembacaan struktur DOM sehingga sangat esensial untuk SEO dan aksesibilitas (_screen readers_), serta membuat manajemen _styling_ CSS jauh lebih terstruktur dibandingkan menggunakan `<div>` yang tidak memiliki makna semantik.
@@ -39,9 +96,10 @@ AI cenderung menghasilkan efek animasi yang terlalu berlebihan atau menggunakan 
 
 Link AI Chat Log: https://share.gemini.google/4yEM9HA9VRJe
 
+</details>
 <br>
-
-### Tugas 2
+<details>
+<summary><b>Tugas 2</b></summary>
 
 **1. Alur MVT Django**  
 Saat URL portofolio diakses, _request_-nya akan dicocokan dengan _path_ yang ada di `urls.py` proyek, lalu diteruskan ke `urls.py` aplikasi. Lalu, _path_ ini akan memanggil fungsi di `views.py` (misalnya `show_experience` atau `show_education`). _View_ bertugas untuk mengambil data dari Django melalui `models.py` (seperti model `Experience` atau `Education`), memasukannya ke dalam _dictionary_ `context`, dan mengirimkannya ke berkas HTML. Kemudian, _template_ merender data yang diterima menggunakan sintaks Django sebelum dikembalikan sebagai _HTTP response_ ke _browser_ pengguna.
@@ -59,3 +117,5 @@ Saya menggunakan AI (Google Gemini) sebagai teman berpikir untuk menentukan lang
 Petunjuk yang telah diberikan sangat membantu saya agar tidak bingung mulai dari mana, dengan penyesuaian di setiap langkah agar lebih konkret dan relevan dengan proyek portofolio ini. Selain itu, informasi yang diberikan juga membantu saya dalam memahami lebih lanjut mengenai _nature_ dari Django itu sendiri sebagai _helper_ untuk integrasi _frontend_ dan _backend_ pada model MVT. Meskipun AI tidak selalu benar dan dapat menyesatkan (terutama jika AI lupa konteks), penanganan informasi yang baik dapat membawa dampak positif bagi tugas ini.
 
 Link AI Chat Log: https://share.gemini.google/ivS3fFi6JzJP
+
+</details>
