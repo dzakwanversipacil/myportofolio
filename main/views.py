@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from django.db.models import F
+from django.contrib import messages
+from django.core import serializers
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from main.forms import ExperienceForm
 from main.models import Experience, Education
 
 def show_main(request):
@@ -17,11 +22,20 @@ def show_main(request):
 
 
 def show_experience(request):
-    experiences = Experience.objects.all().order_by(F('end_date').desc(nulls_first=True), '-start_date')
-    
+    json_response = get_experience_json(request)
+
+    experiences = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+
+    experiences = [experience.object for experience in experiences]
+    title_query = request.GET.get("title", "").strip()
+
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
         "experience_list": experiences,
+        "title_query": title_query,
     }
     return render(request, "experience.html", context)
 
@@ -33,3 +47,37 @@ def show_education(request):
         "education_list": educations,
     }
     return render(request, "education.html", context)
+
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Experience added successfully!")
+        return redirect("main:show_experience")
+
+    context = {
+        "name": "Dzakwan Farabi Al Muzhaffar",
+        "form": form,
+    }
+    return render(request, "experience_form.html", context)
+
+def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.all().order_by(F('end_date').desc(nulls_first=True), '-start_date')
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    experiences_json = serializers.serialize("json", experiences)
+    return HttpResponse(experiences_json, content_type="application/json")
+
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+
+    if request.method == "POST":
+        experience.delete()
+        messages.success(request, "Experience Deleted Successfully!")
+        return redirect("main:show_experience")
+
+    return redirect("main:show_experience")

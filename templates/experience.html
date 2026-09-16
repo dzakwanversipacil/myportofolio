@@ -19,6 +19,28 @@
       <section class="exp" id="experience">
         <div class="container">
           <h2 class="section-title">Experience</h2>
+          <a
+            href="{% url 'main:create_experience' %}"
+            class="button experience-add-button"
+          >
+            <span aria-hidden="true">+</span>
+            Add Experience
+          </a>
+          <form
+            method="get"
+            action="{% url 'main:show_experience' %}"
+            class="experience-search"
+          >
+            <input
+              type="search"
+              name="title"
+              value="{{ title_query }}"
+              placeholder="Search by title"
+              class="experience-search__input"
+              aria-label="Search by title"
+            />
+            <button type="submit" class="button">Search</button>
+          </form>
           <div class="exp-grid grid-layout">
             {% for exp in experience_list %}
             <article class="base-card">
@@ -38,11 +60,23 @@
                 </div>
                 <p class="card-organization">{{ exp.organization }}</p>
                 <p class="card-desc">{{ exp.description }}</p>
+                <div class="experience-card-actions">
+                  <div class="experience-actions">
+                    {% if exp.image_url %}
+                    <a href="{{ exp.image_url }}" class="button"
+                      >Lihat Doksli</a
+                    >
+                    {% endif %} 
+                    {% include "components/experience_delete_modal.html" with experience=exp %}
+                  </div>
+                </div>
               </div>
             </article>
-            {% empty %}
+            {% empty %} {% if title_query %}
+            <p class="empty-state">No search results.</p>
+            {% else %}
             <p>Belum ada data pengalaman.</p>
-            {% endfor %}
+            {% endif %} {% endfor %}
           </div>
         </div>
       </section>
