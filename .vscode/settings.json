@@ -1,0 +1,7 @@
+{
+  "[html]": {
+    "editor.defaultFormatter": "monosans.djlint"
+  },
+  "djlint.formatCss": true,
+  "djlint.formatJs": true
+}
