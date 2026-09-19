@@ -1,5 +1,5 @@
-{% extends 'base.html' %}
-<!doctype html>
+{% extends "base.html" %}
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,80 +7,67 @@
     <title>{{ name }} - Portofolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+          rel="stylesheet" />
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
     {% block content %}
-    <main>
-      <section class="exp" id="experience">
-        <div class="container">
-          <h2 class="section-title">Experience</h2>
-          <a
-            href="{% url 'main:create_experience' %}"
-            class="button experience-add-button"
-          >
-            <span aria-hidden="true">+</span>
-            Add Experience
-          </a>
-          <form
-            method="get"
-            action="{% url 'main:show_experience' %}"
-            class="experience-search"
-          >
-            <input
-              type="search"
-              name="title"
-              value="{{ title_query }}"
-              placeholder="Search by title"
-              class="experience-search__input"
-              aria-label="Search by title"
-            />
-            <button type="submit" class="button">Search</button>
-          </form>
-          <div class="exp-grid grid-layout">
-            {% for exp in experience_list %}
-            <article class="base-card">
-              <div class="card-image-wrapper">
-                {% if exp.image_url %}
-                <img
-                  src="{{ exp.image_url }}"
-                  alt="{{ exp.organization }} experience image"
-                  class="card-cover"
-                />
-                {% endif %}
-              </div>
-              <div class="card-content">
-                <div class="card-header">
-                  <h3>{{ exp.title }}</h3>
-                  <span class="card-badge">{{ exp.formatted_year }}</span>
-                </div>
-                <p class="card-organization">{{ exp.organization }}</p>
-                <p class="card-desc">{{ exp.description }}</p>
-                <div class="experience-card-actions">
-                  <div class="experience-actions">
+      <main>
+        <section class="exp" id="experience">
+          <div class="container">
+            <h2 class="section-title">Experience</h2>
+            <a href="{% url 'main:create_experience' %}" class="button add-button">
+              <span aria-hidden="true">+</span>
+              Add Experience
+            </a>
+            <form method="get" action="{% url 'main:show_experience' %}" class="search">
+              <input type="search"
+                     name="title"
+                     value="{{ title_query }}"
+                     placeholder="Search by title"
+                     class="search__input"
+                     aria-label="Search by title" />
+              <button type="submit" class="button">Search</button>
+            </form>
+            <div class="exp-grid grid-layout">
+              {% for exp in experience_list %}
+                <article class="base-card">
+                  <div class="card-image-wrapper">
                     {% if exp.image_url %}
-                    <a href="{{ exp.image_url }}" class="button"
-                      >Lihat Doksli</a
-                    >
-                    {% endif %} 
-                    {% include "components/experience_delete_modal.html" with experience=exp %}
+                      <img src="{{ exp.image_url }}"
+                           alt="{{ exp.organization }} experience image"
+                           class="card-cover" />
+                    {% endif %}
                   </div>
-                </div>
-              </div>
-            </article>
-            {% empty %} {% if title_query %}
-            <p class="empty-state">No search results.</p>
-            {% else %}
-            <p>Belum ada data pengalaman.</p>
-            {% endif %} {% endfor %}
+                  <div class="card-content">
+                    <div class="card-header">
+                      <h3>{{ exp.title }}</h3>
+                      <span class="card-badge">{{ exp.formatted_year }}</span>
+                    </div>
+                    <p class="card-organization">{{ exp.organization }}</p>
+                    <p class="card-desc">{{ exp.description }}</p>
+                    <div class="card-actions">
+                      <div class="actions">
+                        {% if exp.image_url %}
+                          <a href="{{ exp.image_url }}" class="button">Lihat Doksli</a>
+                        {% endif %}
+                        {% include "components/experience_delete_modal.html" with experience=exp %}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              {% empty %}
+                {% if title_query %}
+                  <p class="empty-state">No search results.</p>
+                {% else %}
+                  <p>Belum ada data pengalaman.</p>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
     {% endblock content %}
   </body>
 </html>
