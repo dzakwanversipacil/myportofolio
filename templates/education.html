@@ -49,9 +49,10 @@
                     <p class="card-desc">{{ edu.description }}</p>
                     <div class="card-actions">
                       <div class="actions">
-                        {% if edu.image_url %}
-                          <a href="{{ edu.image_url }}" class="button">Lihat Doksli</a>
-                        {% endif %}
+                        <a href="{% url 'main:update_education' edu.id %}"
+                           class="button button-warning"
+                           aria-label="Edit {{ education.title }}"
+                           title="Edit Education">Edit Education</a>
                         {% include "components/education_delete_modal.html" with education=edu %}
                       </div>
                     </div>

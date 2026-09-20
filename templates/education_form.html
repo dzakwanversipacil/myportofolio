@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% block meta %}
-    <title>Add Education - {{ name }}</title>
+    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Education - {{ name }}</title>
 {% endblock meta %}
 {% block content %}
     <main>
         <section class="form-section">
             <div class="container">
-                <h1>Add New Education</h1>
-                <form method="post"
-                      action="{% url 'main:create_education' %}"
-                      class="form-class">
+                <h1>{% if form.instance.pk %}Edit Education{% else %}Add New Education{% endif %}</h1>
+                <form method="post" class="form-class">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="form-group">
@@ -19,7 +17,7 @@
                     {% endfor %}
                 </div>
 {% endfor %}
-<button type="submit" class="button">Add Education</button>
+<button type="submit" class="button">{% if form.instance.pk %}Save Changes{% else %}Add Education{% endif %}</button>
 <a href="{% url 'main:show_education' %}"
    class="button button-secondary">Cancel</a>
 </form>

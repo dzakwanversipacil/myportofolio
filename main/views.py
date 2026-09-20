@@ -139,3 +139,18 @@ def update_experience(request, experience_id):
         "form": form,
     }
     return render(request, "experience_form.html", context)
+
+def update_education(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
+    form = EducationForm(request.POST or None, instance=education)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Education updated successfully!")
+        return redirect("main:show_education")
+
+    context = {
+        "name": "Dzakwan Farabi Al Muzhaffar",
+        "form": form,
+    }
+    return render(request, "education_form.html", context)
