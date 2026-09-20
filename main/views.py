@@ -40,11 +40,20 @@ def show_experience(request):
     return render(request, "experience.html", context)
 
 def show_education(request):
-    educations = Education.objects.all().order_by(F('end_date').asc(nulls_last=True), 'start_date')
+    json_response = get_education_json(request)
     
+    educations = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+
+    educations = [education.object for education in educations]
+    organization_query = request.GET.get("organization", "").strip()
+
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
         "education_list": educations,
+        "organization_query": organization_query,
     }
     return render(request, "education.html", context)
 
@@ -85,6 +94,16 @@ def get_experience_json(request):
 
     experiences_json = serializers.serialize("json", experiences)
     return HttpResponse(experiences_json, content_type="application/json")
+
+def get_education_json(request):
+    organization_query = request.GET.get("organization", "").strip()
+    educations = Education.objects.all().order_by(F('end_date').asc(nulls_last=True), 'start_date')
+
+    if organization_query:
+        educations = educations.filter(organization__icontains=organization_query)
+
+    educations_json = serializers.serialize("json", educations)
+    return HttpResponse(educations_json, content_type="application/json")
 
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
