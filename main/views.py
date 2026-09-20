@@ -124,3 +124,18 @@ def delete_education(request, education_id):
         return redirect("main:show_education")
 
     return redirect("main:show_education")
+
+def update_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST or None, instance=experience)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Experience updated successfully!")
+        return redirect("main:show_experience")
+
+    context = {
+        "name": "Dzakwan Farabi Al Muzhaffar",
+        "form": form,
+    }
+    return render(request, "experience_form.html", context)

@@ -49,9 +49,10 @@
                     <p class="card-desc">{{ exp.description }}</p>
                     <div class="card-actions">
                       <div class="actions">
-                        {% if exp.image_url %}
-                          <a href="{{ exp.image_url }}" class="button">Lihat Doksli</a>
-                        {% endif %}
+                        <a href="{% url 'main:update_experience' exp.id %}"
+                           class="button button-warning"
+                           aria-label="Edit {{ experience.title }}"
+                           title="Edit Experience">Edit Experience</a>
                         {% include "components/experience_delete_modal.html" with experience=exp %}
                       </div>
                     </div>

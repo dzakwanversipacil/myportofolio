@@ -17,4 +17,6 @@ urlpatterns = [
 
     path("experience/<uuid:experience_id>/delete/",delete_experience,name="delete_experience"),
     path("education/<uuid:education_id>/delete/",delete_education,name="delete_education"),
+
+    path("experience/<uuid:experience_id>/update/", update_experience, name="update_experience"),
 ]
