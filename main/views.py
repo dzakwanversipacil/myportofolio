@@ -2,9 +2,11 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.db.models import F
 from django.core import serializers
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from main.forms import ExperienceForm, EducationForm
@@ -24,7 +26,6 @@ def show_main(request):
         "last_login": last_login,
     }
     return render(request, "index.html", context)
-
 
 def show_experience(request):
     json_response = get_experience_json(request)
@@ -62,7 +63,11 @@ def show_education(request):
     }
     return render(request, "education.html", context)
 
+@login_required(login_url="/login/")
 def create_experience(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ExperienceForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -110,6 +115,7 @@ def get_education_json(request):
     educations_json = serializers.serialize("json", educations)
     return HttpResponse(educations_json, content_type="application/json")
 
+@login_required(login_url="/login/")
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
 
