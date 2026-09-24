@@ -1,4 +1,5 @@
 import uuid
+from django.contrib.auth.models import User
 from django.db import models
 
 class Experience(models.Model):
@@ -21,6 +22,7 @@ class Experience(models.Model):
     start_date = models.DateTimeField(blank=True, null=True) 
     end_date = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(max_length=500, null=True, blank=True)
+    loved_by = models.ManyToManyField(User, related_name="loved_experiences", blank=True)
 
     def __str__(self):
         return self.title

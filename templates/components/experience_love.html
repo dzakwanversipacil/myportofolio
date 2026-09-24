@@ -1,0 +1,12 @@
+<form method="post"
+      action="{% url 'main:toggle_love' experience.id %}"
+      class="love-form">
+    {% csrf_token %}
+    <button type="submit"
+            class="button button-love{% if user in experience.loved_by.all %} is-loved{% endif %}"
+            title="{% if experience.loved_by.all %}Loved by {{ experience.loved_by.all|join:', ' }}{% else %}Be the first to love this!{% endif %}">
+        <span aria-hidden="true">❤️</span>
+        {% if user in experience.loved_by.all %}Unlove{% else %}Love{% endif %}
+        <span class="love-count">{{ experience.loved_by.count }}</span>
+    </button>
+</form>

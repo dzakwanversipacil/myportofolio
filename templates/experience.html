@@ -51,6 +51,7 @@
                     <p class="card-desc">{{ exp.description }}</p>
                     <div class="card-actions">
                       <div class="actions">
+                        {% include "components/experience_love.html" with experience=exp %}
                         {% if user.is_superuser %}
                           <a href="{% url 'main:update_experience' exp.id %}"
                              class="button button-warning"
