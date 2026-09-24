@@ -1,3 +1,4 @@
+import datetime
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -10,6 +11,7 @@ from main.forms import ExperienceForm, EducationForm
 from main.models import Experience, Education
 
 def show_main(request):
+    last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
         "npm": "2506612436",
@@ -19,6 +21,7 @@ def show_main(request):
             "Actively engaged in coursework related to information systems"
             "architecture, programming, and data science."
         ),
+        "last_login": last_login,
     }
     return render(request, "index.html", context)
 
@@ -175,8 +178,11 @@ def login_user(request):
     form = AuthenticationForm(request, data=request.POST or None)
 
     if request.method == "POST" and form.is_valid():
-        login(request, form.get_user())
-        return redirect("main:show_main")
+        user = form.get_user()
+        login(request, user)
+        response = redirect("main:show_main")
+        response.set_cookie("last_login", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return response
 
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
@@ -186,4 +192,6 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect("main:show_main")
+    response = redirect("main:show_main")
+    response.delete_cookie('last_login')
+    return response
