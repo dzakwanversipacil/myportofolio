@@ -8,6 +8,7 @@ from django.db.models import F
 from django.core import serializers
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.shortcuts import get_object_or_404, redirect, render
 from main.forms import ExperienceForm, EducationForm
 from main.models import Experience, Education
@@ -203,7 +204,10 @@ def login_user(request):
     if request.method == "POST" and form.is_valid():
         user = form.get_user()
         login(request, user)
-        response = redirect("main:show_main")
+
+        next_url = request.POST.get('next') or request.GET.get('next') or '/'
+
+        response = redirect(next_url)
         response.set_cookie("last_login", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return response
 
