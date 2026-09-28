@@ -116,7 +116,7 @@ def get_education_json(request):
     if organization_query:
         educations = educations.filter(organization__icontains=organization_query)
 
-    educations_json = serializers.serialize("json", educations)
+    educations_json = serializers.serialize("json", educations, use_natural_foreign_keys=True)
     return HttpResponse(educations_json, content_type="application/json")
 
 @login_required(login_url="/login/")
