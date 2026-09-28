@@ -44,7 +44,9 @@ myportofolio/
 ├── templates/              # HTML templates directory
 │   ├── components/         # Modular reusable template components
 │   │   ├── education_delete_modal.html
-│   │   └── experience_delete_modal.html
+│   │   ├── education_star.html
+│   │   ├── experience_delete_modal.html
+│   │   └── experience_love.html
 │   ├── base.html           # Root skeleton template
 │   ├── education.html      # Education listing view
 │   ├── education_form.html # Dynamic Create & Update form for Education
