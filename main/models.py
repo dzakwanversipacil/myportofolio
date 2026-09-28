@@ -54,6 +54,7 @@ class Education(models.Model):
     start_date = models.DateTimeField(blank=True, null=True) 
     end_date = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(max_length=500, null=True, blank=True)
+    starred_by = models.ManyToManyField(User, related_name="starred_experiences", blank=True)
 
     def __str__(self):
         return self.organization
