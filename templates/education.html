@@ -17,10 +17,12 @@
         <section class="edu" id="education">
           <div class="container">
             <h2 class="section-title">Education</h2>
-            <a href="{% url 'main:create_education' %}" class="button add-button">
-              <span aria-hidden="true">+</span>
-              Add Education
-            </a>
+            {% if perms.main.add_education %}
+              <a href="{% url 'main:create_education' %}" class="button add-button">
+                <span aria-hidden="true">+</span>
+                Add Education
+              </a>
+            {% endif %}
             <form method="get" action="{% url 'main:show_education' %}" class="search">
               <input type="search"
                      name="organization"
@@ -49,11 +51,15 @@
                     <p class="card-desc">{{ edu.description }}</p>
                     <div class="card-actions">
                       <div class="actions">
-                        <a href="{% url 'main:update_education' edu.id %}"
-                           class="button button-warning"
-                           aria-label="Edit {{ education.title }}"
-                           title="Edit Education">Edit Education</a>
-                        {% include "components/education_delete_modal.html" with education=edu %}
+                        {% if perms.main.change_education %}
+                          <a href="{% url 'main:update_education' edu.id %}"
+                             class="button button-warning"
+                             aria-label="Edit {{ education.title }}"
+                             title="Edit Education">Edit Education</a>
+                        {% endif %}
+                        {% if perms.main.delete_education %}
+                          {% include "components/education_delete_modal.html" with education=edu %}
+                        {% endif %}
                       </div>
                     </div>
                   </div>
