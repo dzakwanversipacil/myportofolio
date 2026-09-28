@@ -22,6 +22,7 @@ urlpatterns = [
     path("education/<uuid:education_id>/update/", update_education, name="update_education"),
 
     path("experience/<uuid:experience_id>/love/", toggle_love, name="toggle_love"),
+    path("education/<uuid:education_id>/star/", toggle_star, name="toggle_star"),
 
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
