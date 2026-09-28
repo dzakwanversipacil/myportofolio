@@ -207,6 +207,9 @@ def login_user(request):
 
         next_url = request.POST.get('next') or request.GET.get('next') or '/'
 
+        if not url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+            next_url = '/'
+
         response = redirect(next_url)
         response.set_cookie("last_login", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return response
