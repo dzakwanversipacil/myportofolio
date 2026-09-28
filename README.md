@@ -175,3 +175,20 @@ Mengenai penyelesaian kode untuk Tugas Individu 3, saya mereferensikan langsung 
 Meskipun demikian, saya tetap menggunakan AI dengan bijak untuk proses belajar saya karena hal tersebut lebih efisien dibandingkan _scroll_ berjam-jam di dokumentasi Django. Selain itu, proses eksperimen yang saya lakukan dengan mengubah beberapa bagian berdasarkan apa yang saya pelajari dapat memvalidasi informasi yang diberikan oleh AI sehingga saya terhindar dari misinformasi.
 
 </details>
+<br>
+<details>
+<summary><b>Tugas 4</b></summary>
+<br>
+
+**AI Disclosure**
+
+Saya menggunakan Google Search (AI Mode) untuk mempelajari cara mengubah _superuser check_ menjadi _permission check_ untuk Tugas Individu 4 pada _view_ dan _template_. Karena AI tersebut tidak dapat menyimpan maupun menyebarkan _log chat_-nya, berikut merupakan kurang lebih _prompting_ yang saya lakukan:
+
+1. Bagaimana cara melakukan pengecekan berdasarkan otorisasi dari user pada Django untuk views.py? Berikan contoh.
+2. Apakah implementasi _permission check_ pada _view_ memiliki perbedaan sintaks dengan implementasinya pada _template_? Berikan contoh.
+
+Mengenai penyelesaian kode untuk Tugas Individu 4, saya mereferensikan langsung apa yang saya lakukan pada Tutorial 4 pada semua _section_ sehingga semua kegiatan penggunaan AI hanya dilakukan pada saat memahami cara mengubah pengecekan agar _group_ `Editor` mendapat akses yang sesuai dan pengecekan menjadi lebih sistematis. Melakukan pemecahan masalah secara mandiri membantu saya untuk memahami kode lebih lanjut (dengan menganalisis mana bagian yang dapat diubah serta digeneralisasi untuk semua _section_ agar tidak redundan) sehingga saya dapat lebih meng-_customize_ kode yang saya buat sesuai dengan kebutuhan _web_ portofolio saya.
+
+Meskipun demikian, saya tetap menggunakan AI dengan bijak untuk proses belajar saya karena hal tersebut lebih efisien dibandingkan _scroll_ berjam-jam di dokumentasi Django. Selain itu, proses eksperimen yang saya lakukan dengan mengubah beberapa bagian berdasarkan apa yang saya pelajari dapat memvalidasi informasi yang diberikan oleh AI sehingga saya terhindar dari misinformasi.
+
+</details>
