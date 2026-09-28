@@ -138,6 +138,7 @@ def delete_education(request, education_id):
 
     return redirect("main:show_education")
 
+@login_required(login_url="/login/")
 def update_experience(request, experience_id):
     if not request.user.has_perm('main.change_experience'):
         raise PermissionDenied
