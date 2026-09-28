@@ -65,7 +65,7 @@ def show_education(request):
 
 @login_required(login_url="/login/")
 def create_experience(request):
-    if not request.user.is_superuser:
+    if not request.user.has_perm('main.add_experience'):
         raise PermissionDenied
 
     form = ExperienceForm(request.POST or None)
@@ -117,6 +117,8 @@ def get_education_json(request):
 
 @login_required(login_url="/login/")
 def delete_experience(request, experience_id):
+    if not request.user.has_perm('main.delete_experience'):
+        raise PermissionDenied
     experience = get_object_or_404(Experience, pk=experience_id)
 
     if request.method == "POST":
@@ -137,6 +139,8 @@ def delete_education(request, education_id):
     return redirect("main:show_education")
 
 def update_experience(request, experience_id):
+    if not request.user.has_perm('main.change_experience'):
+        raise PermissionDenied
     experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST or None, instance=experience)
 
