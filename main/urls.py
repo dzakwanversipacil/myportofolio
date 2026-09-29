@@ -27,7 +27,7 @@ urlpatterns = [
     path("project/<uuid:project_id>/update/", update_project, name="update_project"),
 
     path("experience/<uuid:experience_id>/love/", toggle_love, name="toggle_love"),
-    path("education/<uuid:education_id>/star/", toggle_star, name="toggle_star"),
+    path("<str:section_type>/<uuid:section_id>/star/", toggle_star, name="toggle_star"),
 
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),

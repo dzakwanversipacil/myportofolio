@@ -318,13 +318,25 @@ def toggle_love(request, experience_id):
     return redirect("main:show_experience")
 
 @login_required(login_url="/login/")
-def toggle_star(request, education_id):
-    education = get_object_or_404(Education, pk=education_id)
+def toggle_star(request, section_type, section_id):
+
+    model_mapping = {
+        "experience": Experience,
+        "education": Education,
+        "project": Project,
+    }
+
+    if section_type not in model_mapping:
+        return redirect("main:show_main")
+
+    SectionModel = model_mapping[section_type]
+    
+    item = get_object_or_404(SectionModel, pk=section_id)
 
     if request.method == "POST":
-        if request.user in education.starred_by.all():
-            education.starred_by.remove(request.user)
+        if request.user in item.starred_by.all():
+            item.starred_by.remove(request.user)
         else:
-            education.starred_by.add(request.user)
+            item.starred_by.add(request.user)
 
-    return redirect("main:show_education")
+    return redirect("main:show_{section_type}")
