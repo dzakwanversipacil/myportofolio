@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ name }} - Portofolio</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+              rel="stylesheet" />
+        <link rel="stylesheet" href="/static/css/style.css" />
+    </head>
+    <body>
+        {% block content %}
+            <main>
+                <section class="pro" id="project">
+                    <div class="container">
+                        <h2 class="section-title">Project</h2>
+                        {% if perms.main.add_project %}
+                            <a href="{% url 'main:create_project' %}" class="button add-button">
+                                <span aria-hidden="true">+</span>
+                                Add Project
+                            </a>
+                        {% endif %}
+                        <form method="get" action="{% url 'main:show_project' %}" class="search">
+                            <input type="search"
+                                   name="title"
+                                   value="{{ title_query }}"
+                                   placeholder="Search by title"
+                                   class="search__input"
+                                   aria-label="Search by title" />
+                            <button type="submit" class="button">Search</button>
+                        </form>
+                        <div class="pro-grid grid-layout">
+                            {% for pro in project_list %}
+                                <article class="base-card">
+                                    <div class="card-image-wrapper">
+                                        {% if pro.image_url %}
+                                            <img src="{{ pro.image_url }}"
+                                                 alt="{{ pro.organization }}"
+                                                 class="card-cover" />
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <h3>{{ pro.organization }}</h3>
+                                            <span class="card-badge">{{ pro.formatted_year }}</span>
+                                        </div>
+                                        <p class="card-organization">{{ pro.field_of_study }}</p>
+                                        <p class="card-desc">{{ pro.description }}</p>
+                                        <div class="card-actions">
+                                            <div class="actions">
+                                                {% include "components/star_button.html" with item=pro section_type="project" %}
+                                                {% if pro.project_url %}
+                                                    <a href="{{ pro.project_url }}"
+                                                       class="button button-secondary"
+                                                       aria-label="Open {{ project.title }}">Open Project</a>
+                                                {% endif %}
+                                                {% if perms.main.change_project %}
+                                                    <a href="{% url 'main:update_project' pro.id %}"
+                                                       class="button button-warning"
+                                                       aria-label="Edit {{ project.title }}"
+                                                       title="Edit Project">Edit Project</a>
+                                                {% endif %}
+                                                {% if perms.main.delete_project %}
+                                                    {% include "components/project_delete_modal.html" with project=pro %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% empty %}
+                                {% if title_query %}
+                                    <p class="empty-state">No search results.</p>
+                                {% else %}
+                                    <p>Belum ada data proyek.</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </main>
+        {% endblock content %}
+    </body>
+</html>

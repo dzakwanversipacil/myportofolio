@@ -204,7 +204,8 @@ h3,
 }
 
 .exp,
-.edu {
+.edu,
+.pro {
   padding: 4rem 0;
   border-top: 1px solid var(--line);
 }
@@ -227,7 +228,8 @@ h3,
   flex-direction: column;
 }
 
-.edu-grid {
+.edu-grid,
+.pro-grid {
   flex-direction: row;
 }
 
