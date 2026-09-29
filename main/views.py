@@ -339,4 +339,4 @@ def toggle_star(request, section_type, section_id):
         else:
             item.starred_by.add(request.user)
 
-    return redirect("main:show_{section_type}")
+    return redirect(f"main:show_{section_type}")
