@@ -1,0 +1,12 @@
+<form method="post"
+      action="{% url 'main:toggle_star' section_type=section_type section_id=item.id %}"
+      class="love-form">
+    {% csrf_token %}
+    <button type="submit"
+            class="button button-love{% if user in item.starred_by.all %} is-starred{% endif %}"
+            title="{% if item.starred_by.all %}Starred by {{ item.starred_by.all|join:', ' }}{% else %}Be the first to star this!{% endif %}">
+        <span aria-hidden="true">⭐</span>
+        {% if user in item.starred_by.all %}Unstar{% else %}Star{% endif %}
+        <span class="love-count">{{ item.starred_by.count }}</span>
+    </button>
+</form>

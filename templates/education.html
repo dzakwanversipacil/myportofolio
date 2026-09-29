@@ -51,7 +51,7 @@
                     <p class="card-desc">{{ edu.description }}</p>
                     <div class="card-actions">
                       <div class="actions">
-                        {% include "components/education_star.html" with education=edu %}
+                        {% include "components/star_button.html" with item=edu section_type="education" %}
                         {% if perms.main.change_education %}
                           <a href="{% url 'main:update_education' edu.id %}"
                              class="button button-warning"
