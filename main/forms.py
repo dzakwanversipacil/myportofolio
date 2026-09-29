@@ -128,39 +128,39 @@ class ProjectForm(ModelForm):
         ]
 
         labels = {
-            "title": "Nama Proyek",
-            "description": "Deskripsi Proyek",
-            "tech_stack": "Teknologi yang Digunakan",
-            "project_url": "URL Proyek",
-            "project_image_url": "URL Gambar Proyek",
+            "title": "Project Name",
+            "description": "Project Description",
+            "tech_stack": "Tech Stack",
+            "project_url": "Project URL",
+            "project_image_url": "Project Image URL",
         }
 
         widgets = {
             "title": TextInput(
                 attrs={
-                    "placeholder": "Portfolio Website",
+                    "placeholder": "ex. Portfolio Website",
                     "maxlength": 255,
                 }
             ),
             "description": Textarea(
                 attrs={
-                    "placeholder": "Ceritakan Proyekmu",
+                    "placeholder": "ex. A website used to display my background as an Information Systems Student.",
                     "rows": 3,
                 }
             ),
             "tech_stack": TextInput(
                 attrs={
-                    "placeholder": "Django, Python, HTML, CSS",
+                    "placeholder": "ex. Django, Python, HTML, CSS",
                 }
             ),
             "project_url": URLInput(
                 attrs={
-                    "placeholder": "https://github.com/kakBurhan/burhanquestv4",
+                    "placeholder": "ex. https://github.com/dzakwanversipacil/myportofolio",
                 }
             ),
             "project_image_url": URLInput(
                 attrs={
-                    "placeholder": "https://drive.google.com/thumbnail?id=...&sz=w1000",
+                    "placeholder": "https://drive.google.com/thumbnail?id=<FILE_ID>&sz=w1000",
                 }
             ),
         }
