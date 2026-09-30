@@ -6,10 +6,10 @@
             <div class="container">
                 <h2 class="section-title">Project</h2>
                 {% if perms.main.add_project %}
-                    <a href="{% url 'main:create_project' %}" class="button add-button">
+                    <button type="button" class="button add-button" popovertarget="add-project-modal">
                         <span aria-hidden="true">+</span>
                         Add Project
-                    </a>
+                    </button>
                 {% endif %}
 
                 <!-- Form Search (Kembali ke class "search" dan "search__input") -->
@@ -44,7 +44,9 @@
             </div>
         </section>
     </main>
-
+{% if user.is_superuser %}
+    {% include "components/project_form_modal.html" %}
+{% endif %}
 <script>
     const BASE_PROJECTS_ENDPOINT = "{% url 'main:get_project_json' %}";
     const CAN_CHANGE_PROJECT = "{{ perms.main.change_project|yesno:'true,false' }}" === "true";
@@ -148,6 +150,10 @@
         `;
 
         return articleElement;
+    }
+
+    function closeProjectModal() {
+        document.getElementById("add-project-modal").hidePopover();
     }
 
     async function fetchProjects(searchQuery = "") {

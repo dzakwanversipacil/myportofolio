@@ -70,6 +70,7 @@ def show_project(request):
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
         "title_query": title_query,
+        "form": ProjectForm(),
     }
     return render(request, "project.html", context)
 
