@@ -259,7 +259,7 @@ def update_project(request, project_id):
     if not request.user.has_perm('main.change_project'):
         raise PermissionDenied
 
-    project = get_object_or_404(project, pk=project_id)
+    project = get_object_or_404(Project, pk=project_id)
     form = ProjectForm(request.POST or None, instance=project)
 
     if request.method == "POST" and form.is_valid():

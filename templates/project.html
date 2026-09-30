@@ -1,86 +1,191 @@
 {% extends "base.html" %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{{ name }} - Portofolio</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
-              rel="stylesheet" />
-        <link rel="stylesheet" href="/static/css/style.css" />
-    </head>
-    <body>
-        {% block content %}
-            <main>
-                <section class="pro" id="project">
-                    <div class="container">
-                        <h2 class="section-title">Project</h2>
-                        {% if perms.main.add_project %}
-                            <a href="{% url 'main:create_project' %}" class="button add-button">
-                                <span aria-hidden="true">+</span>
-                                Add Project
-                            </a>
-                        {% endif %}
-                        <form method="get" action="{% url 'main:show_project' %}" class="search">
-                            <input type="search"
-                                   name="title"
-                                   value="{{ title_query }}"
-                                   placeholder="Search by title"
-                                   class="search__input"
-                                   aria-label="Search by title" />
-                            <button type="submit" class="button">Search</button>
-                        </form>
-                        <div class="pro-grid grid-layout">
-                            {% for pro in project_list %}
-                                <article class="base-card">
-                                    <div class="card-image-wrapper">
-                                        {% if pro.image_url %}
-                                            <img src="{{ pro.image_url }}"
-                                                 alt="{{ pro.organization }}"
-                                                 class="card-cover" />
-                                        {% endif %}
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="card-header">
-                                            <h3>{{ pro.organization }}</h3>
-                                            <span class="card-badge">{{ pro.formatted_year }}</span>
-                                        </div>
-                                        <p class="card-organization">{{ pro.field_of_study }}</p>
-                                        <p class="card-desc">{{ pro.description }}</p>
-                                        <div class="card-actions">
-                                            <div class="actions">
-                                                {% include "components/star_button.html" with item=pro section_type="project" %}
-                                                {% if pro.project_url %}
-                                                    <a href="{{ pro.project_url }}"
-                                                       class="button button-secondary"
-                                                       aria-label="Open {{ project.title }}">Open Project</a>
-                                                {% endif %}
-                                                {% if perms.main.change_project %}
-                                                    <a href="{% url 'main:update_project' pro.id %}"
-                                                       class="button button-warning"
-                                                       aria-label="Edit {{ project.title }}"
-                                                       title="Edit Project">Edit Project</a>
-                                                {% endif %}
-                                                {% if perms.main.delete_project %}
-                                                    {% include "components/project_delete_modal.html" with project=pro %}
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-                            {% empty %}
-                                {% if title_query %}
-                                    <p class="empty-state">No search results.</p>
-                                {% else %}
-                                    <p>Belum ada data proyek.</p>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+
+{% block content %}
+    <main>
+        <section class="pro" id="project">
+            <div class="container">
+                <h2 class="section-title">Project</h2>
+                {% if perms.main.add_project %}
+                    <a href="{% url 'main:create_project' %}" class="button add-button">
+                        <span aria-hidden="true">+</span>
+                        Add Project
+                    </a>
+                {% endif %}
+
+                <!-- Form Search (Kembali ke class "search" dan "search__input") -->
+                <form id="project-search-form" class="search">
+                    <input type="search"
+                           id="search-input"
+                           name="title"
+                           value="{{ title_query }}"
+                           placeholder="Cari berdasarkan nama proyek"
+                           class="search__input"
+                           aria-label="Cari berdasarkan nama proyek">
+                    <button type="submit" class="button">Cari</button>
+                </form>
+
+                <!-- Loading State -->
+                <div id="loading" class="empty-state hide">
+                    <p>Memuat projects...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="error" class="empty-state hide">
+                    <p>Gagal memuat data projects. Silakan coba lagi.</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty" class="empty-state hide">
+                    <p>Belum ada proyek yang ditambahkan atau ditemukan.</p>
+                </div>
+
+                <!-- Project Grid (Kembali ke class "pro-grid grid-layout") -->
+                <div id="grid" class="pro-grid grid-layout hide"></div>
+            </div>
+        </section>
+    </main>
+
+<script>
+    const BASE_PROJECTS_ENDPOINT = "{% url 'main:get_project_json' %}";
+    const CAN_CHANGE_PROJECT = "{{ perms.main.change_project|yesno:'true,false' }}" === "true";
+    const CAN_DELETE_PROJECT = "{{ perms.main.delete_project|yesno:'true,false' }}" === "true";
+    let projectsAbortController;
+
+    const loadingState = document.getElementById('loading');
+    const errorState = document.getElementById('error');
+    const emptyState = document.getElementById('empty');
+    const gridContainer = document.getElementById('grid');
+    const searchForm = document.getElementById('project-search-form');
+    const searchInput = document.getElementById('search-input');
+
+    function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+        loadingState.classList.toggle('hide', !showLoading);
+        errorState.classList.toggle('hide', !showError);
+        emptyState.classList.toggle('hide', !showEmpty);
+        gridContainer.classList.toggle('hide', !showGrid);
+    }
+
+    function buildProjectCardElement(item) {
+        const project = item.fields;
+        const projectId = item.pk;
+
+        const articleElement = document.createElement('article');
+        articleElement.className = 'base-card';
+
+        const imageHtml = project.project_image_url 
+            ? `<div class="card-image-wrapper">
+                <img src="${project.project_image_url}" alt="${project.title || ''}" class="card-cover" />
+            </div>`
+            : `<div class="card-image-wrapper"></div>`;
+
+        const openProjectHtml = project.project_url 
+            ? `<a href="${project.project_url}" 
+                class="button button-secondary" 
+                aria-label="Open ${project.title || ''}">Open Project</a>`
+            : '';
+
+        const updateUrl = "{% url 'main:update_project' '00000000-0000-0000-0000-000000000000' %}"
+            .replace('00000000-0000-0000-0000-000000000000', projectId);
+
+        const deleteUrl = "{% url 'main:delete_project' '00000000-0000-0000-0000-000000000000' %}"
+            .replace('00000000-0000-0000-0000-000000000000', projectId);
+
+        const starUrl = "{% url 'main:toggle_star' 'project' '00000000-0000-0000-0000-000000000000' %}"
+            .replace('00000000-0000-0000-0000-000000000000', projectId);
+
+        const editHtml = CAN_CHANGE_PROJECT
+            ? `<a href="${updateUrl}" 
+                class="button button-warning" 
+                aria-label="Edit ${project.title || ''}" 
+                title="Edit Project">Edit Project</a>`
+            : '';
+
+        const deleteHtml = CAN_DELETE_PROJECT
+            ? `<form method="post" action="${deleteUrl}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="button button-danger" 
+                        onclick="return confirm('Yakin ingin menghapus project ini?');">Delete</button>
+            </form>`
+            : '';
+
+        const isStarredClass = project.is_starred ? " is-starred" : "";
+        const starText = project.is_starred ? "Unstar" : "Star";
+        const starTitle = project.star_count > 0 
+            ? `Dibintangi oleh ${project.starred_by_names || ''}` 
+            : "Jadilah yang pertama memberi star";
+
+        const starButtonHtml = `
+            <form method="post" action="${starUrl}" class="star-form" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button button-star${isStarredClass}" title="${starTitle}">
+                    <span aria-hidden="true">★</span>
+                    ${starText} ${project.star_count || 0}
+                </button>
+            </form>
+        `;
+
+        articleElement.innerHTML = `
+            ${imageHtml}
+            <div class="card-content">
+                <div class="card-header">
+                    <h3>${project.title || ''}</h3>
+                </div>
+                <p class="card-organization">${project.tech_stack || ''}</p>
+                <p class="card-desc">${project.description || ''}</p>
+                <div class="card-actions">
+                    <div class="actions">
+                        ${starButtonHtml}
+                        ${openProjectHtml}
+                        ${editHtml}
+                        ${deleteHtml}
                     </div>
-                </section>
-            </main>
-        {% endblock content %}
-    </body>
-</html>
+                </div>
+            </div>
+        `;
+
+        return articleElement;
+    }
+
+    async function fetchProjects(searchQuery = "") {
+        if (projectsAbortController) projectsAbortController.abort();
+        projectsAbortController = new AbortController();
+
+        try {
+            displayPageSection({ showLoading: true });
+            
+            const url = searchQuery ? `${BASE_PROJECTS_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_PROJECTS_ENDPOINT;
+            
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: projectsAbortController.signal,
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch data');
+
+            const projectData = await response.json();
+
+            if (projectData.length === 0) {
+                displayPageSection({ showEmpty: true });
+            } else {
+                gridContainer.innerHTML = '';
+                projectData.forEach(item => {
+                    gridContainer.appendChild(buildProjectCardElement(item));
+                });
+                displayPageSection({ showGrid: true });
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            console.error('Error loading projects:', error);
+            displayPageSection({ showError: true });
+        }
+    }
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetchProjects(searchInput.value.trim());
+    });
+
+    fetchProjects(searchInput.value.trim());
+</script>
+{% endblock content %}
