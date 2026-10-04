@@ -30,20 +30,12 @@ def show_main(request):
     return render(request, "index.html", context)
 
 def show_experience(request):
-    json_response = get_experience_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-
-    experiences = [experience.object for experience in experiences]
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
-        "experience_list": experiences,
         "title_query": title_query,
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 
@@ -131,13 +123,34 @@ def create_project(request):
 
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.all().order_by(F('end_date').desc(nulls_first=True), '-start_date')
+    experiences = Experience.objects.prefetch_related('loved_by').all().order_by(F('end_date').desc(nulls_first=True), '-start_date')
 
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
-    return HttpResponse(experiences_json, content_type="application/json")
+    data = []
+    for experience in experiences:
+        loved_users = experience.loved_by.all()
+        is_loved = request.user in loved_users if request.user.is_authenticated else False
+        loved_by_names = ", ".join([u.username for u in loved_users])
+
+        data.append({
+            "pk": str(experience.id),
+            "fields": {
+                "title": experience.title,
+                "description": experience.description,
+                "organization": experience.organization,
+                "field_of_study": experience.field_of_study,
+                "start_date": experience.start_date,
+                "end_date": experience.end_date,
+                "image_url": experience.image_url,
+                "love_count": loved_users.count(),
+                "is_loved": is_loved,
+                "loved_by_names": loved_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 def get_education_json(request):
     organization_query = request.GET.get("organization", "").strip()
