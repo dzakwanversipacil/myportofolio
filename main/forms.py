@@ -64,7 +64,7 @@ class ExperienceForm(ModelForm):
         def clean_title(self):
             title = strip_tags(self.cleaned_data["title"]).strip()
             if not title:
-                raise ValidationError("Nama pengalaman tidak boleh hanya berisi tag HTML.")
+                raise ValidationError("Experience title cannot be empty or only contain HTML tags.")
             return title
         
         def clean_organization(self):
@@ -131,10 +131,10 @@ class EducationForm(ModelForm):
         }
 
         def clean_organization(self):
-                    organization = strip_tags(self.cleaned_data["organization"]).strip()
-                    if not organization:
-                        raise ValidationError("Nama organisasi tidak boleh hanya berisi tag HTML.")
-                    return organization
+            organization = strip_tags(self.cleaned_data["organization"]).strip()
+            if not organization:
+                raise ValidationError("Education organization cannot be empty or only contain HTML tags.")
+            return organization
         
         def clean_field_of_study(self):
             return strip_tags(self.cleaned_data["field_of_study"]).strip()
@@ -194,7 +194,7 @@ class ProjectForm(ModelForm):
         def clean_title(self):
             title = strip_tags(self.cleaned_data["title"]).strip()
             if not title:
-                raise ValidationError("Nama proyek tidak boleh hanya berisi tag HTML.")
+                raise ValidationError("Project title cannot be empty or only contain HTML tags.")
             return title
 
         def clean_tech_stack(self):
