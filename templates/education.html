@@ -18,64 +18,280 @@
           <div class="container">
             <h2 class="section-title">Education</h2>
             {% if perms.main.add_education %}
-              <a href="{% url 'main:create_education' %}" class="button add-button">
+              <button type="button"
+                      class="button add-button"
+                      popovertarget="add-education-modal">
                 <span aria-hidden="true">+</span>
                 Add Education
-              </a>
+              </button>
             {% endif %}
-            <form method="get" action="{% url 'main:show_education' %}" class="search">
+            <form id="education-search-form" class="search">
               <input type="search"
-                     name="organization"
-                     value="{{ organization_query }}"
-                     placeholder="Search by organization"
+                     id="search-input"
+                     name="title"
+                     value="{{ title_query }}"
+                     placeholder="Search by education title"
                      class="search__input"
-                     aria-label="Search by organization" />
+                     aria-label="Search by education title">
               <button type="submit" class="button">Search</button>
             </form>
-            <div class="edu-grid grid-layout">
-              {% for edu in education_list %}
-                <article class="base-card">
-                  <div class="card-image-wrapper">
-                    {% if edu.image_url %}
-                      <img src="{{ edu.image_url }}"
-                           alt="{{ edu.organization }}"
-                           class="card-cover" />
-                    {% endif %}
-                  </div>
-                  <div class="card-content">
-                    <div class="card-header">
-                      <h3>{{ edu.organization }}</h3>
-                      <span class="card-badge">{{ edu.formatted_year }}</span>
-                    </div>
-                    <p class="card-organization">{{ edu.field_of_study }}</p>
-                    <p class="card-desc">{{ edu.description }}</p>
-                    <div class="card-actions">
-                      <div class="actions">
-                        {% include "components/star_button.html" with item=edu section_type="education" %}
-                        {% if perms.main.change_education %}
-                          <a href="{% url 'main:update_education' edu.id %}"
-                             class="button button-warning"
-                             aria-label="Edit {{ education.title }}"
-                             title="Edit Education">Edit Education</a>
-                        {% endif %}
-                        {% if perms.main.delete_education %}
-                          {% include "components/education_delete_modal.html" with education=edu %}
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              {% empty %}
-                {% if title_query %}
-                  <p class="empty-state">No search results.</p>
-                {% else %}
-                  <p>Belum ada data pendidikan.</p>
-                {% endif %}
-              {% endfor %}
+            <!-- Loading State -->
+            <div id="loading" class="empty-state hide">
+              <p>Loading educations...</p>
             </div>
+            <!-- Error State -->
+            <div id="error" class="empty-state hide">
+              <p>Failed to load educations. Please try again.</p>
+            </div>
+            <!-- Empty State -->
+            <div id="empty" class="empty-state hide">
+              <p>No education added or found.</p>
+            </div>
+            <!-- Project Grid (Kembali ke class "pro-grid grid-layout") -->
+            <div id="grid" class="edu-grid grid-layout hide"></div>
           </div>
         </section>
       </main>
+      {% if user.is_superuser %}
+        {% include "components/education_form_modal.html" %}
+      {% endif %}
+      <script>
+          const BASE_EDUCATIONS_ENDPOINT = "{% url 'main:get_education_json' %}";
+          const CAN_CHANGE_EDUCATION = "{{ perms.main.change_education|yesno:'true,false' }}" === "true";
+          const CAN_DELETE_EDUCATION = "{{ perms.main.delete_education|yesno:'true,false' }}" === "true";
+          let educationsAbortController;
+
+          const loadingState = document.getElementById('loading');
+          const errorState = document.getElementById('error');
+          const emptyState = document.getElementById('empty');
+          const gridContainer = document.getElementById('grid');
+          const searchForm = document.getElementById('education-search-form');
+          const searchInput = document.getElementById('search-input');
+
+          const SEARCH_DEBOUNCE_DELAY = 300;
+          let searchDebounceTimer;
+
+          function displayPageSection({
+              showLoading = false,
+              showError = false,
+              showEmpty = false,
+              showGrid = false
+          }) {
+              loadingState.classList.toggle('hide', !showLoading);
+              errorState.classList.toggle('hide', !showError);
+              emptyState.classList.toggle('hide', !showEmpty);
+              gridContainer.classList.toggle('hide', !showGrid);
+          }
+
+          function escapeHtml(value) {
+              return String(value ?? '')
+                  .replaceAll('&', '&amp;')
+                  .replaceAll('<', '&lt;')
+                  .replaceAll('>', '&gt;')
+                  .replaceAll('"', '&quot;')
+                  .replaceAll("'", '&#39;');
+          }
+
+          function buildEducationCardElement(item) {
+              const education = item.fields;
+              const educationId = item.pk;
+
+              const articleElement = document.createElement('article');
+              articleElement.className = 'base-card';
+
+              const imageHtml = education.image_url ?
+                  `<div class="card-image-wrapper">
+                <img src="${escapeHtml(education.image_url)}" alt="${escapeHtml(education.title) || ''}" class="card-cover" />
+            </div>` :
+                  `<div class="card-image-wrapper"></div>`;
+
+              const updateUrl = "{% url 'main:update_education' '00000000-0000-0000-0000-000000000000' %}"
+                  .replace('00000000-0000-0000-0000-000000000000', educationId);
+
+              const deleteUrl = "{% url 'main:delete_education' '00000000-0000-0000-0000-000000000000' %}"
+                  .replace('00000000-0000-0000-0000-000000000000', educationId);
+
+              const starUrl = "{% url 'main:toggle_star' 'education' '00000000-0000-0000-0000-000000000000' %}"
+                  .replace('00000000-0000-0000-0000-000000000000', educationId);
+
+              const editHtml = CAN_CHANGE_EDUCATION ?
+                  `<a href="${updateUrl}" 
+                class="button button-warning" 
+                aria-label="Edit ${escapeHtml(education.title) || ''}" 
+                title="Edit Education">Edit Education</a>` :
+                  '';
+
+              const deleteHtml = CAN_DELETE_EDUCATION ?
+                  `<form method="post" action="${deleteUrl}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="button button-danger" 
+                        onclick="return confirm('Yakin ingin menghapus pengalaman ini?');">Delete</button>
+            </form>` :
+                  '';
+
+              const isStarredClass = education.is_starred ? " is-starred" : "";
+              const starText = education.is_starred ? "Unstar" : "Star";
+              const starTitle = education.star_count > 0 ?
+                  `Stard by ${escapeHtml(education.starred_by_names) || ''}` :
+                  "Be the first to star this!";
+
+              const starButtonHtml = `
+            <form method="post" action="${starUrl}" class="star-form" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button button-star${isStarredClass}" title="${starTitle}">
+                    <span aria-hidden="true">⭐</span>
+                    ${starText} ${escapeHtml(education.star_count) || 0}
+                </button>
+            </form>
+        `;
+
+              articleElement.innerHTML = `
+            ${imageHtml}
+            <div class="card-content">
+                <div class="card-header">
+                    <h3>${escapeHtml(education.title) || ''}</h3>
+                    <span class="card-badge">${escapeHtml(education.formatted_year) || ''}</span>
+                </div>
+                <p class="card-organization">${escapeHtml(education.organization) || ''}</p>
+                <p class="card-desc">${escapeHtml(education.description) || ''}</p>
+                <div class="card-actions">
+                    <div class="actions">
+                        ${starButtonHtml}
+                        ${editHtml}
+                        ${deleteHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+              return articleElement;
+          }
+
+          function closeEducationModal() {
+              document.getElementById("add-education-modal").hidePopover();
+          }
+
+          async function fetchEducations(searchQuery = "") {
+              if (educationsAbortController) educationsAbortController.abort();
+              educationsAbortController = new AbortController();
+
+              try {
+                  displayPageSection({
+                      showLoading: true
+                  });
+
+                  const url = searchQuery ? `${BASE_EDUCATIONS_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_EDUCATIONS_ENDPOINT;
+
+                  const response = await fetch(url, {
+                      headers: {
+                          'Accept': 'application/json'
+                      },
+                      signal: educationsAbortController.signal,
+                  });
+
+                  if (!response.ok) throw new Error('Failed to fetch data');
+
+                  const educationData = await response.json();
+
+                  if (educationData.length === 0) {
+                      displayPageSection({
+                          showEmpty: true
+                      });
+                  } else {
+                      gridContainer.innerHTML = '';
+                      educationData.forEach(item => {
+                          gridContainer.appendChild(buildEducationCardElement(item));
+                      });
+                      displayPageSection({
+                          showGrid: true
+                      });
+                  }
+              } catch (error) {
+                  if (error.name === 'AbortError') return;
+                  console.error('Error loading educations:', error);
+                  displayPageSection({
+                      showError: true
+                  });
+              }
+          }
+
+          const CREATE_EDUCATION_ENDPOINT = "{% url 'main:create_education_ajax' %}";
+          const educationForm = document.getElementById('education-form');
+
+          function getCookie(name) {
+              let cookieValue = null;
+              if (document.cookie && document.cookie !== '') {
+                  const cookies = document.cookie.split(';');
+                  for (let i = 0; i < cookies.length; i++) {
+                      const cookie = cookies[i].trim();
+                      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                          break;
+                      }
+                  }
+              }
+              return cookieValue;
+          }
+
+          async function addEducation(event) {
+              event.preventDefault();
+
+              const submitButton = educationForm.querySelector('button[type="submit"]');
+              submitButton.disabled = true;
+
+              try {
+                  const response = await fetch(CREATE_EDUCATION_ENDPOINT, {
+                      method: 'POST',
+                      headers: {
+                          'X-CSRFToken': getCookie('csrftoken')
+                      },
+                      body: new FormData(educationForm),
+                  });
+                  const result = await response.json().catch(() => ({}));
+
+                  if (response.ok) {
+                      educationForm.reset();
+                      closeEducationModal();
+                      showToast('Success', 'A new education has been successfully added!', 'success');
+                      fetchEducations(searchInput.value.trim());
+                  } else {
+                      const errorMessages = result.errors ?
+                          Object.values(result.errors).flat().map(error => error.message) : [result.message || `Oops! Something went wrong. (status ${response.status}).`];
+                      showToast('Failed to add the education.', errorMessages.join(' '), 'error');
+                  }
+              } catch (error) {
+                  console.error('Error adding education:', error);
+                  showToast('Failed to add the education.', 'Unable to connect to the server. Please try again.', 'error');
+              } finally {
+                  submitButton.disabled = false;
+              }
+          }
+
+          if (educationForm) {
+              educationForm.addEventListener('submit', addEducation);
+          }
+
+          function searchEducations() {
+              fetchEducations(searchInput.value.trim());
+          }
+
+          searchInput.addEventListener("input", function() {
+              clearTimeout(searchDebounceTimer);
+
+              searchDebounceTimer = setTimeout(function() {
+                  searchEducations();
+              }, SEARCH_DEBOUNCE_DELAY);
+          });
+
+          searchForm.addEventListener("submit", function(event) {
+              event.preventDefault();
+              clearTimeout(searchDebounceTimer);
+              searchEducations();
+          });
+
+          fetchEducations(searchInput.value.trim());
+      </script>
     {% endblock content %}
   </body>
 </html>
