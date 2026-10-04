@@ -40,20 +40,12 @@ def show_experience(request):
     return render(request, "experience.html", context)
 
 def show_education(request):
-    json_response = get_education_json(request)
-    
-    educations = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-
-    educations = [education.object for education in educations]
     organization_query = request.GET.get("organization", "").strip()
 
     context = {
         "name": "Dzakwan Farabi Al Muzhaffar",
-        "education_list": educations,
         "organization_query": organization_query,
+        "form": EducationForm(),
     }
     return render(request, "education.html", context)
 
@@ -154,13 +146,33 @@ def get_experience_json(request):
 
 def get_education_json(request):
     organization_query = request.GET.get("organization", "").strip()
-    educations = Education.objects.all().order_by(F('end_date').asc(nulls_last=True), 'start_date')
+    educations = Education.objects.prefetch_related('starred_by').all().order_by(F('end_date').asc(nulls_last=True), 'start_date')
 
     if organization_query:
         educations = educations.filter(organization__icontains=organization_query)
 
-    educations_json = serializers.serialize("json", educations, use_natural_foreign_keys=True)
-    return HttpResponse(educations_json, content_type="application/json")
+    data = []
+    for education in educations:
+        starred_users = education.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(education.id),
+            "fields": {
+                "description": education.description,
+                "organization": education.organization,
+                "field_of_study": education.field_of_study,
+                "start_date": education.start_date,
+                "end_date": education.end_date,
+                "image_url": education.image_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 def get_project_json(request):
     title_query = request.GET.get("title", "").strip()
