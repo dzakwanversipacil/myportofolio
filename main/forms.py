@@ -118,6 +118,18 @@ class EducationForm(ModelForm):
             ),
         }
 
+        def clean_organization(self):
+                    organization = strip_tags(self.cleaned_data["organization"]).strip()
+                    if not organization:
+                        raise ValidationError("Nama organisasi tidak boleh hanya berisi tag HTML.")
+                    return organization
+        
+        def clean_field_of_study(self):
+            return strip_tags(self.cleaned_data["field_of_study"]).strip()
+
+        def clean_description(self):
+            return strip_tags(self.cleaned_data["description"]).strip()
+
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
