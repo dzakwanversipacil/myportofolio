@@ -150,10 +150,10 @@
             ${imageHtml}
             <div class="card-content">
                 <div class="card-header">
-                    <h3>${escapeHtml(education.title) || ''}</h3>
+                    <h3>${escapeHtml(education.organization) || ''}</h3>
                     <span class="card-badge">${escapeHtml(education.formatted_year) || ''}</span>
                 </div>
-                <p class="card-organization">${escapeHtml(education.organization) || ''}</p>
+                <p class="card-organization">${escapeHtml(education.field_of_study) || ''}</p>
                 <p class="card-desc">${escapeHtml(education.description) || ''}</p>
                 <div class="card-actions">
                     <div class="actions">
