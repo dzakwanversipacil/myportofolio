@@ -61,17 +61,17 @@ class ExperienceForm(ModelForm):
             ),
         }
 
-        def clean_title(self):
-            title = strip_tags(self.cleaned_data["title"]).strip()
-            if not title:
-                raise ValidationError("Experience title cannot be empty or only contain HTML tags.")
-            return title
-        
-        def clean_organization(self):
-            return strip_tags(self.cleaned_data["organization"]).strip()
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Experience title cannot be empty or only contain HTML tags.")
+        return title
+    
+    def clean_organization(self):
+        return strip_tags(self.cleaned_data["organization"]).strip()
 
-        def clean_description(self):
-            return strip_tags(self.cleaned_data["description"]).strip()
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
 
 class EducationForm(ModelForm):
     class Meta:
@@ -130,17 +130,17 @@ class EducationForm(ModelForm):
             ),
         }
 
-        def clean_organization(self):
-            organization = strip_tags(self.cleaned_data["organization"]).strip()
-            if not organization:
-                raise ValidationError("Education organization cannot be empty or only contain HTML tags.")
-            return organization
-        
-        def clean_field_of_study(self):
-            return strip_tags(self.cleaned_data["field_of_study"]).strip()
+    def clean_organization(self):
+        organization = strip_tags(self.cleaned_data["organization"]).strip()
+        if not organization:
+            raise ValidationError("Education organization cannot be empty or only contain HTML tags.")
+        return organization
+    
+    def clean_field_of_study(self):
+        return strip_tags(self.cleaned_data["field_of_study"]).strip()
 
-        def clean_description(self):
-            return strip_tags(self.cleaned_data["description"]).strip()
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -191,14 +191,14 @@ class ProjectForm(ModelForm):
             ),
         }
 
-        def clean_title(self):
-            title = strip_tags(self.cleaned_data["title"]).strip()
-            if not title:
-                raise ValidationError("Project title cannot be empty or only contain HTML tags.")
-            return title
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Project title cannot be empty or only contain HTML tags.")
+        return title
 
-        def clean_tech_stack(self):
-            return strip_tags(self.cleaned_data["tech_stack"]).strip()
+    def clean_tech_stack(self):
+        return strip_tags(self.cleaned_data["tech_stack"]).strip()
 
-        def clean_description(self):
-            return strip_tags(self.cleaned_data["description"]).strip()
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
